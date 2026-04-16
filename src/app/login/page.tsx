@@ -10,8 +10,8 @@ function LoginForm() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(""); // 👇 Added error state
-  const [loading, setLoading] = useState(false); // 👇 Added loading state
+  const [error, setError] = useState(""); 
+  const [loading, setLoading] = useState(false); 
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,7 +22,6 @@ function LoginForm() {
       const res = await fetch("/api/oauth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        // Send the credentials AND the OAuth routing info!
         body: JSON.stringify({ 
           email, 
           password, 
@@ -34,8 +33,6 @@ function LoginForm() {
       const data = await res.json();
 
       if (res.ok) {
-        // SUCCESS! The backend gave us the return URL. 
-        // We use window.location to forcefully bounce the browser out of our Identity Server
         window.location.href = data.redirectUrl;
       } else {
         setError(data.error || "Login failed");
@@ -55,6 +52,9 @@ function LoginForm() {
     );
   }
 
+  // 👇 Dynamically build the register URL so we don't lose the OAuth context!
+  const registerUrl = `/register?${searchParams.toString()}`;
+
   return (
     <div className="max-w-md mx-auto mt-20 p-8 bg-white text-gray-900 rounded-lg shadow-md border">
       <div className="text-center mb-8">
@@ -62,7 +62,6 @@ function LoginForm() {
         <p className="text-sm text-gray-500 mt-2">Continue to your application</p>
       </div>
 
-      {/* 👇 Added Error Display */}
       {error && (
         <div className="mb-4 p-3 bg-red-50 text-red-600 text-sm rounded border border-red-200">
           {error}
@@ -94,6 +93,18 @@ function LoginForm() {
           {loading ? "Verifying..." : "Sign In"}
         </button>
       </form>
+
+      {/* 👇 Added Sign Up Link Section */}
+      <div className="mt-6 text-center text-sm text-gray-600 pt-4 border-t border-gray-100">
+        Don't have an account?{" "}
+        <a 
+          href={registerUrl} 
+          className="text-blue-600 font-semibold hover:underline"
+        >
+          Sign up here
+        </a>
+      </div>
+
     </div>
   );
 }
